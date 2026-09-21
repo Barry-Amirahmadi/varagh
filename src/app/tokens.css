@@ -1,0 +1,186 @@
+/* ============================================================================
+   VARAGH — DESIGN TOKENS
+   Single source of truth. Nothing in the app may hardcode a colour, a size,
+   a duration or an easing curve; it references a token from this file.
+
+   Palette rationale — the colours are named from the subject's own world,
+   which for a print studio is paper, ink and pigment:
+     کاغذ   / kaghaz    raw uncoated stock, the ground everything is printed on
+     مرکب   / morakkab  printing ink, used both as the dark ground and as text
+     ورق    / varagh    the sheet itself — the light that sits on the dark ground
+     شنگرف  / shangarf  vermilion, the pigment Persian manuscripts used for the
+                        marks that were not the text: rubrics, rules, numerals.
+                        Exactly the job the accent does here.
+
+   EVERY RATIO BELOW IS MEASURED, not estimated. WCAG relative luminance,
+   computed against the two grounds in this file. A comment claiming a number
+   this file cannot produce is worse than no comment.
+
+   FLATNESS. PARNIAN had three planes on each side — base, `-deep`, `-raised`
+   — and its depth system leaned on a shadow plus a translucent hairline.
+   Brutalism has no depth. The three planes are therefore defined here as the
+   *same colour*, deliberately and not by oversight: the components that read
+   them are unchanged, and the result is flat. Separation comes from a solid
+   rule, never from a fill step or a shadow.
+   ========================================================================= */
+
+@theme {
+  /* ---- Colour: light ground -------------------------------------------
+     All three are identical. See the flatness note above — this is the
+     mechanism, not a copy/paste error. */
+  --color-kaghaz: #f2f2f0; /* page ground */
+  --color-kaghaz-deep: #f2f2f0; /* secondary ground — same by design */
+  --color-kaghaz-raised: #f2f2f0; /* raised surface — same by design */
+
+  /* ---- Colour: dark ground --------------------------------------------- */
+  --color-morakkab: #0a0a0a; /* primary dark ground */
+  --color-morakkab-deep: #0a0a0a; /* deepest ground — same by design */
+  --color-morakkab-raised: #0a0a0a; /* raised on dark — same by design */
+
+  /* ---- Colour: text ----------------------------------------------------- */
+  --color-ink: #0a0a0a; /* on kaghaz — 17.66:1 */
+  --color-ink-2: #4a4a46; /* body secondary on kaghaz — 7.94:1 */
+  --color-ink-3: #5a5a56; /* metadata on kaghaz — 6.18:1 */
+  --color-varagh: #f2f2f0; /* on morakkab — 17.66:1 */
+  --color-varagh-2: #a8a8a4; /* secondary on morakkab — 8.30:1 */
+
+  /* ---- Colour: accent ---------------------------------------------------
+     One accent, one hue. Never a fill behind body text — at 3.19:1 it is a
+     large-text/non-text colour on paper and nothing else. */
+  --color-shangarf: #ff3b00; /* 3.19:1 on kaghaz · 5.54:1 on morakkab */
+  --color-shangarf-deep: #c22d00; /* 5.11:1 on kaghaz — safe for small text */
+
+  /* ---- Colour: lines ----------------------------------------------------
+     Solid, never a transparency mix. A brutalist rule is a printed rule: it
+     is the same black as the type, at full strength, or it is not a rule. */
+  --color-line: #0a0a0a;
+  --color-line-strong: #0a0a0a;
+  --color-line-dark: #f2f2f0;
+  --color-line-dark-strong: #f2f2f0;
+
+  /* ---- Colour: state ----------------------------------------------------
+     The accent is the focus ring on both grounds, and it clears the 3:1
+     non-text minimum on each: 3.19:1 on kaghaz, 5.54:1 on morakkab. One
+     token rather than two, because one colour genuinely passes both. */
+  --color-focus: #ff3b00;
+  --color-focus-dark: #ff3b00;
+
+  /* ---- Rule weights -----------------------------------------------------
+     Two weights and no others. The hairline separates, the heavy rule
+     divides. Anything between them reads as indecision. */
+  --rule: 1px;
+  --rule-heavy: 2px;
+
+  /* ---- Type families ----------------------------------------------------
+     Vazirmatn      — one grotesque, carrying the whole page. Weight 900 for
+                      display, 400 for body. The weight contrast IS the
+                      typographic idea; there is no second Persian face.
+     JetBrains Mono — Latin only. Work numbers, archive codes, years, Latin
+                      micro-labels. Loaded with the `latin` subset alone, so
+                      it carries no Persian glyph risk at all.
+
+     The mono stack falls through to Vazirmatn before the system monospace.
+     A metadata line mixes Persian words with Latin punctuation and digits;
+     without that step the Persian half would land on whatever the OS calls
+     `monospace`, which on Windows is Consolas and has no Persian at all.
+     Wired to next/font in layout.tsx; the vars are declared there. */
+  --font-display: var(--font-vazir), "Vazirmatn", system-ui, sans-serif;
+  --font-body: var(--font-vazir), "Vazirmatn", system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), "JetBrains Mono", var(--font-vazir), ui-monospace,
+    monospace;
+
+  /* ---- Type scale — fluid, no breakpoint jumps --------------------------
+     Far beyond PARNIAN's, on purpose: the statement band is the design, and
+     a statement set at a merely large size is an editorial headline. */
+  --text-statement: clamp(3rem, 13vw, 13rem);
+  --text-contact: clamp(2rem, 8vw, 7rem);
+  --text-display: clamp(2.25rem, 7.5vw, 6.5rem);
+  --text-h1: clamp(2rem, 5.5vw, 4.25rem);
+  --text-h2: clamp(1.625rem, 3.6vw, 2.75rem);
+  --text-h3: clamp(1.125rem, 1.9vw, 1.5rem);
+  --text-lead: clamp(1.0625rem, 1.4vw, 1.25rem);
+  --text-body: 1.0625rem; /* 17px — Persian reads small at 16 */
+  --text-sm: 0.9375rem; /* 15px */
+  /* 14px. The floor for the index table on a phone — below this the four
+     columns stop being readable, and shrinking them further is not an
+     acceptable way to make the row fit. */
+  --text-index: 0.875rem;
+  --text-meta: 0.8125rem;
+  --text-micro: 0.75rem; /* mono labels, always tracked */
+
+  /* ---- Line height ------------------------------------------------------
+     Tight, but not tight enough to collide. Vazirmatn at 900 carries real
+     ascenders and descenders in Persian; anything under 1 overlaps on a
+     two-line statement, which is a defect rather than a style. */
+  --leading-statement: 1.02;
+  --leading-display: 1.06;
+  --leading-heading: 1.2;
+  --leading-body: 1.9;
+  --leading-tight: 1.5;
+
+  /* ---- Spacing scale ---------------------------------------------------- */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --space-9: 6rem;
+  --space-10: 8rem;
+  --space-11: 12rem;
+
+  /* ---- Layout rhythm ---------------------------------------------------- */
+  --section-y: clamp(4.5rem, 9vw, 9rem);
+  --section-y-tight: clamp(2.5rem, 5vw, 5rem);
+  --gutter: clamp(1.25rem, 4vw, 3rem); /* page padding */
+  --grid-gap: clamp(1rem, 2vw, 2rem);
+  --container-max: 1760px;
+  /* Deliberately wider than PARNIAN's 34rem. The about page is one column of
+     running text with nothing beside it; a narrow measure in a field of empty
+     paper reads as a magazine column, which is the register this design is
+     specifically not in. */
+  --measure: 44rem;
+  --measure-tight: 32rem;
+
+  /* ---- Radius — zero. All of it. ---------------------------------------- */
+  --radius-none: 0px;
+  --radius-xs: 0px;
+
+  /* ---- Elevation — there is none. ---------------------------------------
+     Kept as a token because `.plane-raised` and `.img-frame` still reference
+     it; redefining it to `none` is what flattens both without touching a
+     single component. */
+  --shadow-lift: none;
+
+  /* ---- Motion -----------------------------------------------------------
+     Short and nearly linear. A 780ms eased settle is the motion language of
+     the other five sites; here a state change should feel like a switch
+     being thrown, not like something arriving. */
+  --ease-out: cubic-bezier(0.2, 0, 0, 1);
+  --ease-in-out: cubic-bezier(0.8, 0, 0.2, 1);
+  --dur-fast: 90ms;
+  --dur: 160ms;
+  --dur-slow: 260ms;
+
+  /* ---- Breakpoints ------------------------------------------------------ */
+  --breakpoint-sm: 24rem; /* 384 — covers 375/390 phones */
+  --breakpoint-md: 48rem; /* 768 */
+  --breakpoint-lg: 64rem; /* 1024 */
+  --breakpoint-xl: 80rem; /* 1280 */
+  --breakpoint-2xl: 90rem; /* 1440 */
+}
+
+/* ============================================================================
+   DIRECTION AXIS
+   The document is RTL. Physical transforms (translateX) do not flip with
+   `dir`, so motion direction is driven by this multiplier instead. Adding an
+   English locale later means overriding one declaration, not rewriting motion.
+   ========================================================================= */
+:root {
+  --flow-start: 1; /* content enters from the right in RTL */
+}
+[dir="ltr"] {
+  --flow-start: -1;
+}

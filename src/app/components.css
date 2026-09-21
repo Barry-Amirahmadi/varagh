@@ -1,0 +1,555 @@
+/* ============================================================================
+   COMPONENT SURFACES — VARAGH
+   Written as CSS classes rather than utility soup so that a colour or a size
+   can only ever change in tokens.css. Tailwind is used for layout — grid
+   spans, flex, order — where it earns its keep.
+
+   House style for this site: a rule, a number, and a word. No cards, no
+   shadows, no radii, no gradients, no icons standing in for language.
+   ========================================================================= */
+
+/* ---- The one link treatment --------------------------------------------- */
+/* A link is text with a rule under it, and the rule thickens. Nothing slides,
+   nothing fades, no arrow leads it anywhere. */
+
+.link-hard {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 2.75rem;
+  border-block-end: var(--rule) solid var(--color-line);
+  transition: border-block-end-width var(--dur-fast) var(--ease-out);
+}
+.link-hard:hover {
+  border-block-end-width: var(--rule-heavy);
+}
+.on-dark .link-hard {
+  border-block-end-color: var(--color-line-dark);
+}
+
+/* ---- Header -------------------------------------------------------------
+   Sticky, opaque, and separated by a rule rather than by a blur. The blurred
+   translucent bar is the single most recognisable element of the other five
+   sites; it is also the expensive one (a sticky backdrop-filter re-blurs on
+   every scrolled frame). Gone on both counts. */
+
+.site-header {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 50;
+  background-color: var(--color-kaghaz);
+  border-block-end: var(--rule-heavy) solid var(--color-line);
+}
+
+.nav-link {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 2.75rem;
+  padding-inline: var(--space-3);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--color-ink);
+  transition:
+    background-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
+}
+/* The same inversion the index rows use, so the whole site has one hover
+   idea rather than one per component. */
+@media (hover: hover) {
+  .nav-link:hover {
+    background-color: var(--color-morakkab);
+    color: var(--color-varagh);
+  }
+}
+.nav-link[aria-current] {
+  color: var(--color-shangarf-deep);
+}
+
+.header-mail {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 2.75rem;
+  padding-inline: var(--space-4);
+  background-color: var(--color-morakkab);
+  color: var(--color-varagh);
+  font-family: var(--font-mono);
+  font-size: var(--text-micro);
+  letter-spacing: 0.1em;
+  direction: ltr;
+  transition: background-color var(--dur-fast) var(--ease-out);
+}
+.header-mail:hover {
+  background-color: var(--color-shangarf-deep);
+}
+
+/* ---- Mobile navigation panel --------------------------------------------
+   Drops straight down and covers the page. No slide from the reading edge,
+   no staggered link entrance — both belong to the softer sites. */
+
+.menu-panel {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-morakkab);
+  color: var(--color-varagh);
+  visibility: hidden;
+  opacity: 0;
+  transition:
+    opacity var(--dur) var(--ease-out),
+    visibility 0s linear var(--dur);
+}
+.menu-panel[data-open="true"] {
+  visibility: visible;
+  opacity: 1;
+  transition:
+    opacity var(--dur) var(--ease-out),
+    visibility 0s;
+}
+
+.menu-panel__link {
+  display: block;
+  padding-block: var(--space-4);
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(2rem, 11vw, 4rem);
+  line-height: 1.12;
+  color: var(--color-varagh);
+  border-block-end: var(--rule) solid var(--color-line-dark);
+}
+
+.menu-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 2.75rem;
+  block-size: 2.75rem;
+  margin-inline-end: calc(var(--space-3) * -1);
+  cursor: pointer;
+}
+.menu-toggle__bar {
+  display: block;
+  block-size: var(--rule-heavy);
+  background-color: currentColor;
+}
+
+/* ============================================================================
+   THE INDEX
+   The core surface of this site. Six works as a numbered register, full bleed
+   to the gutters, one hairline per row.
+
+   GRID NOTE, and it is the reason this uses named areas rather than column
+   numbers. CSS Grid's sparse auto-placement cursor never moves backwards: a
+   child that asks for an earlier column than one already placed is pushed
+   into a new implicit row instead of sitting beside it. That shipped
+   undetected in the engine this repo is derived from for four months
+   (`ProductRow.tsx`, the `lg:row-start-1` on every copy block). Explicit
+   `grid-template-areas` cannot express that bug at all — every child is
+   named into a cell, so there is no cursor and nothing to place sparsely.
+   Whatever this table grows into, keep the areas.
+   ========================================================================= */
+
+/* Column headings, above the first rule. Hidden below 768 where the row
+   itself collapses to two columns and the headings would be lying. Shares the
+   row's template so the two cannot drift apart. */
+.index-head {
+  display: none;
+}
+@media (min-width: 48rem) {
+  .index-head {
+    display: grid;
+    grid-template-columns: 4.5rem minmax(0, 1fr) minmax(0, 13rem) minmax(0, 13rem);
+    column-gap: var(--space-5);
+    padding-inline: var(--gutter);
+    padding-block-end: var(--space-2);
+  }
+}
+
+.index-list {
+  border-block-start: var(--rule-heavy) solid var(--color-line);
+}
+.on-dark .index-list {
+  border-block-start-color: var(--color-line-dark);
+}
+
+.index-row {
+  display: grid;
+  align-items: baseline;
+  grid-template-columns: 3.25rem minmax(0, 1fr);
+  grid-template-areas:
+    "num  title"
+    "num  meta";
+  column-gap: var(--space-4);
+  row-gap: var(--space-1);
+  padding-block: var(--space-4);
+  padding-inline: var(--gutter);
+  border-block-end: var(--rule) solid var(--color-line);
+  transition:
+    background-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
+}
+.on-dark .index-row {
+  border-block-end-color: var(--color-line-dark);
+}
+
+@media (min-width: 48rem) {
+  .index-row {
+    align-items: center;
+    grid-template-columns: 4.5rem minmax(0, 1fr) minmax(0, 13rem) minmax(0, 13rem);
+    grid-template-areas: "num title discipline role";
+    column-gap: var(--space-5);
+    row-gap: 0;
+    padding-block: var(--space-5);
+  }
+}
+
+.index-row__num {
+  grid-area: num;
+  font-size: var(--text-index);
+  color: var(--color-ink-3);
+}
+.index-row__title {
+  grid-area: title;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(1.375rem, 3.2vw, 2.25rem);
+  line-height: 1.15;
+  color: var(--color-ink);
+}
+.index-row__meta {
+  grid-area: meta;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--space-4);
+  font-size: var(--text-index);
+  color: var(--color-ink-3);
+}
+/* Above 768 the two metadata values stop being one wrapped line and become
+   their own columns. Written as two named areas rather than as a reflow of
+   the same element, so neither column can ever land in the wrong one. */
+.index-row__discipline {
+  font-size: var(--text-index);
+  color: var(--color-ink-3);
+}
+.index-row__role {
+  font-size: var(--text-index);
+  color: var(--color-ink-3);
+}
+@media (min-width: 48rem) {
+  .index-row__meta {
+    display: contents;
+  }
+  .index-row__discipline {
+    grid-area: discipline;
+  }
+  .index-row__role {
+    grid-area: role;
+  }
+}
+
+/* The row inverts under the pointer. Hover-capable devices only — on a
+   touchscreen a :hover rule sticks after the tap and leaves one row inverted
+   until something else is touched. Keyboard focus gets the same inversion
+   rather than only the ring, so a keyboard reader sees what a mouse reader
+   sees; it is strictly more information, at no cost. */
+@media (hover: hover) {
+  .index-row:hover {
+    background-color: var(--color-morakkab);
+    color: var(--color-varagh);
+  }
+  .index-row:hover .index-row__title {
+    color: var(--color-varagh);
+  }
+  .index-row:hover .index-row__discipline,
+  .index-row:hover .index-row__role,
+  .index-row:hover .index-row__meta {
+    color: var(--color-varagh-2);
+  }
+  /* The accent marks the row you are on — the one place a number is coloured
+     on this site. 5.54:1 on the inverted ground, so it clears small text. */
+  .index-row:hover .index-row__num {
+    color: var(--color-shangarf);
+  }
+}
+
+.index-row:focus-visible {
+  background-color: var(--color-morakkab);
+  color: var(--color-varagh);
+}
+.index-row:focus-visible .index-row__title {
+  color: var(--color-varagh);
+}
+.index-row:focus-visible .index-row__discipline,
+.index-row:focus-visible .index-row__role,
+.index-row:focus-visible .index-row__meta {
+  color: var(--color-varagh-2);
+}
+.index-row:focus-visible .index-row__num {
+  color: var(--color-shangarf);
+}
+
+/* The discipline break on the collection page. Not a heading over a group of
+   cards — a ruled line across the register, the way a printed index breaks. */
+.index-break {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding-block: var(--space-4) var(--space-3);
+  padding-inline: var(--gutter);
+  border-block-start: var(--rule-heavy) solid var(--color-line);
+  background-color: var(--color-kaghaz);
+}
+
+/* The jump row at the head of `/products/`. Three mono labels on a heavy rule.
+   `flex-wrap` with a gap rather than a grid: the count follows the content
+   file, so nothing here may assume there are three. */
+.register-jump {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3) var(--space-6);
+  margin-block-start: var(--space-6);
+  padding-block-start: var(--space-4);
+  border-block-start: var(--rule-heavy) solid var(--color-line-strong);
+}
+
+/* ---- Selected works ------------------------------------------------------
+   Three full-bleed bands. The label is butted into the corner of the plate,
+   not floated over the middle of it — a caption block pressed against the
+   edge, the way a contact sheet is annotated. */
+
+.selected-item {
+  display: block;
+  position: relative;
+}
+
+.selected-item__plate {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
+  background-color: var(--color-morakkab);
+}
+@media (min-width: 48rem) {
+  .selected-item__plate {
+    aspect-ratio: 16 / 9;
+  }
+}
+
+.selected-item__label {
+  position: absolute;
+  inset-block-end: 0;
+  inset-inline-start: 0;
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-5);
+  background-color: var(--color-morakkab);
+  color: var(--color-varagh);
+  max-inline-size: calc(100% - var(--gutter));
+  transition: background-color var(--dur-fast) var(--ease-out);
+}
+@media (hover: hover) {
+  .selected-item:hover .selected-item__label {
+    background-color: var(--color-shangarf-deep);
+  }
+}
+.selected-item:focus-visible .selected-item__label {
+  background-color: var(--color-shangarf-deep);
+}
+
+.selected-item__title {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(1.25rem, 3.4vw, 2.5rem);
+  line-height: 1.1;
+  color: var(--color-varagh);
+}
+
+/* ---- Disciplines ---------------------------------------------------------
+   Three text blocks, divided by rules. No icon, no illustration, no numbered
+   badge — the name at display size is the whole ornament. */
+
+.discipline-block {
+  padding-block: var(--space-6);
+  border-block-start: var(--rule-heavy) solid var(--color-line);
+}
+@media (min-width: 48rem) {
+  .discipline-block {
+    padding-inline-end: var(--space-6);
+  }
+  .discipline-block + .discipline-block {
+    padding-inline-start: var(--space-6);
+    border-inline-start: var(--rule-heavy) solid var(--color-line);
+  }
+}
+
+/* ---- One screen ----------------------------------------------------------
+   The statement and the contact bands each own a full viewport. `svh` is the
+   small viewport height — the one that does not change when a mobile
+   browser's URL bar retracts, so the band does not resize under the reader
+   mid-scroll. The `vh` line above it is the fallback for anything that does
+   not know `svh`; order matters, the last understood declaration wins.
+
+   4.5rem is the header. It is sticky, so without subtracting it the "first
+   screen" is one header taller than the screen. */
+
+.screen {
+  min-block-size: calc(100vh - 4.5rem);
+  min-block-size: calc(100svh - 4.5rem);
+}
+.screen-full {
+  min-block-size: 100vh;
+  min-block-size: 100svh;
+}
+
+/* ---- Contact -------------------------------------------------------------
+   One screen, one address. The mailto is the largest interactive thing on the
+   site and is sized to say so. */
+
+.contact-mail {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: var(--text-contact);
+  line-height: 1.04;
+  letter-spacing: -0.01em;
+  direction: ltr;
+  color: var(--color-varagh);
+  /* At 8vw on a 390px screen this address is wider than the gutters allow.
+     It wraps rather than pushing the page sideways — a two-line address is a
+     design decision, a page that scrolls horizontally is a defect. */
+  overflow-wrap: anywhere;
+  border-block-end: var(--rule-heavy) solid var(--color-line-dark);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+.contact-mail:hover {
+  color: var(--color-shangarf);
+  border-block-end-color: var(--color-shangarf);
+}
+
+/* ---- Spec table — the work's own details --------------------------------
+   A definition list, ruled. Label at the start edge, value at the end edge,
+   exactly as a colophon sets it. */
+
+.spec-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-5);
+  padding-block: var(--space-4);
+  border-block-start: var(--rule) solid var(--color-line);
+}
+.spec-row:last-child {
+  border-block-end: var(--rule) solid var(--color-line);
+}
+.on-dark .spec-row {
+  border-block-start-color: var(--color-line-dark);
+}
+.on-dark .spec-row:last-child {
+  border-block-end-color: var(--color-line-dark);
+}
+
+/* ---- Archive -------------------------------------------------------------
+   A uniform grid. Every plate the same ratio, every code in the same place.
+   The tile is a real button and it says so with the cursor — the engine's
+   gallery tiles computed `cursor: default`, which is a known open defect
+   there and is asserted against in this repo's smoke pass. */
+
+.archive-tile {
+  display: block;
+  inline-size: 100%;
+  text-align: start;
+  cursor: pointer;
+  position: relative;
+}
+/* Composed in the markup as `img-frame archive-tile__plate`: the frame — a
+   hard 2px rule and no shadow — comes from the shared rule in globals.css, so
+   there is one definition of what a framed picture looks like on this site.
+   This class adds only the square crop. */
+.archive-tile__plate {
+  aspect-ratio: 1 / 1;
+  transition: border-color var(--dur-fast) var(--ease-out);
+}
+@media (hover: hover) {
+  .archive-tile:hover .archive-tile__plate {
+    border-color: var(--color-shangarf);
+  }
+}
+.archive-tile:focus-visible .archive-tile__plate {
+  border-color: var(--color-shangarf);
+}
+.archive-tile__code {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  padding: var(--space-2) var(--space-3);
+  background-color: var(--color-morakkab);
+  color: var(--color-varagh);
+  font-size: var(--text-micro);
+}
+
+/* ---- Work detail plates --------------------------------------------------
+   Full bleed, no frame, no caption over the picture. Each opens the lightbox,
+   so each is a button. */
+
+.work-plate {
+  display: block;
+  inline-size: 100%;
+  cursor: pointer;
+  position: relative;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background-color: var(--color-morakkab);
+}
+@media (min-width: 48rem) {
+  .work-plate {
+    aspect-ratio: 16 / 9;
+  }
+}
+
+/* ---- Lightbox ------------------------------------------------------------ */
+
+.lightbox {
+  border: 0;
+  padding: 0;
+  max-inline-size: 100vw;
+  max-block-size: 100vh;
+  inline-size: 100vw;
+  block-size: 100dvh;
+  background-color: transparent;
+  color: var(--color-varagh);
+  overflow: hidden;
+}
+.lightbox::backdrop {
+  background-color: #0a0a0a;
+}
+
+/* ---- Footer and menu links ----------------------------------------------
+   Text links in a dense list still need a finger-sized hit area. The height
+   comes from the link itself so the list gap can stay at zero and the block
+   does not grow taller than the design intends. */
+
+.footer-link {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 2.75rem;
+  transition: color var(--dur-fast) var(--ease-out);
+}
+.footer-link:hover {
+  color: var(--color-shangarf);
+}
+
+.crumb {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 2.75rem;
+  transition: color var(--dur-fast) var(--ease-out);
+}
+.crumb:hover {
+  color: var(--color-ink);
+}
+.on-dark .crumb:hover {
+  color: var(--color-varagh);
+}
