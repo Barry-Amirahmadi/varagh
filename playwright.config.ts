@@ -23,6 +23,20 @@ const raw = process.env.SMOKE_BASE_PATH ?? "/varagh";
 const BASE_PATH = raw === "/" ? "" : raw.replace(/\/+$/, "");
 const PORT = 4321;
 
+/**
+ * Where the suite points. Defaults to the local static server; set
+ * `SMOKE_ORIGIN` to run the same assertions against the deployed site:
+ *
+ *   SMOKE_ORIGIN=https://barry-amirahmadi.github.io npm run test:smoke
+ *
+ * Worth doing once after a deploy. A green workflow says the artifact
+ * uploaded; it does not say the host serves it correctly, and the two have
+ * disagreed before — a 200 on every route with the base path dropped from
+ * every asset looks identical to success from inside CI.
+ */
+const ORIGIN = process.env.SMOKE_ORIGIN ?? `http://localhost:${PORT}`;
+const isLocal = ORIGIN.includes("localhost");
+
 export default defineConfig({
   testDir: "./tests",
   fullyParallel: true,
@@ -39,7 +53,7 @@ export default defineConfig({
     // Origin only. A path passed to page.goto() that starts with "/" replaces
     // the whole path of baseURL, so folding the base path in here would
     // silently drop it from every request. The tests spell it out instead.
-    baseURL: `http://localhost:${PORT}`,
+    baseURL: ORIGIN,
     trace: "retain-on-failure",
   },
 
@@ -56,12 +70,17 @@ export default defineConfig({
     { name: "mobile", use: { ...devices["Pixel 7"], viewport: { width: 390, height: 844 } } },
   ],
 
-  webServer: {
-    // The base is passed without its leading slash: Git Bash on Windows rewrites
-    // a leading-slash argument into a native path, which would 404 every route.
-    command: `node scripts/serve-static.mjs --port ${PORT} --base ${BASE_PATH.slice(1)}`,
-    url: `http://localhost:${PORT}${BASE_PATH}/`,
-    reuseExistingServer: !process.env.CI,
-    timeout: 30_000,
-  },
+  // Skipped entirely when pointed at a deployed origin — there is nothing to
+  // start, and Playwright would otherwise wait 30s for a server it does not need.
+  webServer: isLocal
+    ? {
+        // The base is passed without its leading slash: Git Bash on Windows
+        // rewrites a leading-slash argument into a native path, which would
+        // 404 every route.
+        command: `node scripts/serve-static.mjs --port ${PORT} --base ${BASE_PATH.slice(1)}`,
+        url: `http://localhost:${PORT}${BASE_PATH}/`,
+        reuseExistingServer: !process.env.CI,
+        timeout: 30_000,
+      }
+    : undefined,
 });

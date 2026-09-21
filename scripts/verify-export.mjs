@@ -17,7 +17,17 @@ import { chromium } from "@playwright/test";
 
 const PORT = process.env.PORT ?? "4321";
 const BASE = process.env.SMOKE_BASE_PATH ?? "/varagh";
-const origin = `http://localhost:${PORT}`;
+
+/**
+ * Defaults to the local preview. Point `ORIGIN` at the deployed site to run
+ * the same sweep against what GitHub Pages actually serves:
+ *
+ *   ORIGIN=https://barry-amirahmadi.github.io node scripts/verify-export.mjs
+ *
+ * Worth doing once per deploy rather than trusting the workflow's green tick —
+ * the tick says the artifact uploaded, not that the host serves it correctly.
+ */
+const origin = process.env.ORIGIN ?? `http://localhost:${PORT}`;
 
 const ROUTES = [
   "/",
